@@ -13,7 +13,7 @@
 int _printf(const char *format, ...)
 {
 	va_list arg;
-	int done = 0;
+	int counter = 0;
 
 	va_start(arg, format);
 
@@ -29,7 +29,7 @@ int _printf(const char *format, ...)
 			int c = va_arg(arg, int);
 
 			write(1, &c, 1);
-			done++;
+			counter++;
 			break;
 			}
 			case 's':
@@ -37,7 +37,7 @@ int _printf(const char *format, ...)
 			char *s = va_arg(arg, char*);
 			size_t len = strlen(s);
 			write(1, s, len);
-			done += len;
+			counter += len;
 			break;
 			}
 			case 'd':
@@ -45,18 +45,18 @@ int _printf(const char *format, ...)
 				{
 					size_t len;
 					int num = va_arg(arg, int);
-					char buffer[32];
-					snprintf(buffer, 32, "%d", num);
-					len = strlen(buffer);
-					write(1, buffer, len);
-					done += len;
+					char bufer[32];
+					snprintf(bufer, 32, "%d", num);
+					len = strlen(bufer);
+					write(1, bufer, len);
+					counter += len;
 					break;
 				}
 			case '%':
 			{
 			char c = '%';
 			write(1, &c, 1);
-			done++;
+			counter++;
 			break;
 			}
 			default: {
@@ -64,7 +64,7 @@ int _printf(const char *format, ...)
 			str[0] = '%';
 			str[1] = *format;
 			write(1, str, 2);
-			done += 2;
+			counter += 2;
 			free(str);
 			break;
 			}
@@ -73,13 +73,13 @@ int _printf(const char *format, ...)
        	else
 	{
 		write(1, format, 1);
-		done++;
+		counter++;
 	}
 	format++;
 	}
 
 	va_end(arg);
 
-	return (done);
+	return (counter);
 }
 
