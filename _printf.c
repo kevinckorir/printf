@@ -1,63 +1,57 @@
 #include <unistd.h>
-#include <stdlib.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
 
-int print(char *str, ...)
+int _printf(const char *format, ...)
 {
-    va_list vl;
-    va_start(vl, str);
+    va_list arg;
+    int done = 0;
 
-    char *buff = malloc(100);
-    int i = 0, j = 0;
+    va_start(arg, format);
 
-    while (str && str[i])
-    {
-        if (str[i] == '%')
-        {
-            i++;
-            switch (str[i])
-            {
-                case 'c':
-                {
-                    char c = (char) va_arg(vl, int);
-                    buff[j] = c;
-                    j++;
+    while (*format != '\0') {
+        if (*format == '%') {
+            format++;
+            switch (*format) {
+                case 'c': {
+                    int c = va_arg(arg, int);
+                    write(1, &c, 1);
+                    done++;
                     break;
                 }
-                case 'd':
-                {
-                    int num = va_arg(vl, int);
-                    char tmp[20];
-                    itoa(num, tmp, 10);
-                    int len = strlen(tmp);
-                    memcpy(&buff[j], tmp, len);
-                    j += len;
+                case 's': {
+                    char *s = va_arg(arg, char*);
+                    size_t len = strlen(s);
+                    write(1, s, len);
+                    done += len;
                     break;
                 }
-                case 'x':
-                {
-                    int num = va_arg(vl, int);
-                    char tmp[20];
-                    itoa(num, tmp, 16);
-                    int len = strlen(tmp);
-                    memcpy(&buff[j], tmp, len);
-                    j += len;
+                case '%': {
+                    char c = '%';
+                    write(1, &c, 1);
+                    done++;
+                    break;
+                }
+                default: {
+                    char *str = (char*) malloc(2 * sizeof(char));
+                    str[0] = '%';
+                    str[1] = *format;
+                    write(1, str, 2);
+                    done += 2;
+                    free(str);
                     break;
                 }
             }
+        } else {
+            write(1, format, 1);
+            done++;
         }
-        else
-        {
-            buff[j] = str[i];
-            j++;
-        }
-        i++;
+        format++;
     }
 
-    write(STDOUT_FILENO, buff, j);
-    free(buff);
-    va_end(vl);
-    return j;
+    va_end(arg);
+
+    return done;
 }
 
