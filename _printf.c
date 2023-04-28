@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 /**
  * _printf - prints next line in buffer
@@ -39,7 +40,19 @@ int _printf(const char *format, ...)
 			done += len;
 			break;
 			}
-			case '%': 
+			case 'd':
+				case 'i':
+				{
+					size_t len;
+					int num = va_arg(arg, int);
+					char buffer[32];
+					snprintf(buffer, 32, "%d", num);
+					len = strlen(buffer);
+					write(1, buffer, len);
+					done += len;
+					break;
+				}
+			case '%':
 			{
 			char c = '%';
 			write(1, &c, 1);
